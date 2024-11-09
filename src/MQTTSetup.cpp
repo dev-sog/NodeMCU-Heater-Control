@@ -4,8 +4,11 @@
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-const char* mqtt_server = "broker.emqx.io";
-const char* status_topic = "device1/SOG/heater/status";  // Only using status topic now
+const char* mqtt_server = "3.91.232.238";
+const char* mqtt_username = "dev_sog";         // MQTT username
+const char* mqtt_password = "qwe123QWE!\"£";   // MQTT password
+
+const char* status_topic = "device1/SOG/heater/status";         // Publish the heater status
 const char* subscribe_topic = "device1/SOG/heater/new_thresholds"; // Subscribe to receive new thresholds
 
 unsigned long lastReconnectAttempt = 0;  // Track last reconnect attempt time
@@ -73,7 +76,7 @@ void setupMQTT() {
     Serial.print("Attempting MQTT connection with Client ID: ");
     Serial.println(clientId);
 
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), mqtt_username, mqtt_password)) {
         Serial.println("Connected to MQTT broker.");
         client.subscribe(subscribe_topic);
     } else {
@@ -84,13 +87,13 @@ void setupMQTT() {
 }
 
 bool reconnectMQTT() {
-  String clientId = "NodeMCUClient-" + WiFi.macAddress();
+    String clientId = "NodeMCUClient-" + WiFi.macAddress();
     clientId.replace(":", "");
 
     Serial.print("Attempting MQTT reconnection with Client ID: ");
     Serial.println(clientId);
 
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), mqtt_username, mqtt_password)) {
         Serial.println("Reconnected to MQTT broker.");
         client.subscribe(subscribe_topic);
         return true;
